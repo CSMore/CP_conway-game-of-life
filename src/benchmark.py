@@ -1,4 +1,6 @@
 import time
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -10,6 +12,7 @@ def save_plot(fig, path):
     """
     Save matplotlib figure.
     """
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
 
     fig.savefig(
         path,
@@ -24,7 +27,7 @@ def run_benchmark():
 
     # Grid sizes
     sizes = [32, 64, 128, 256, 512, 1024]
-
+    repetitions = 10
     # Store execution times
     times = []
 
@@ -41,34 +44,31 @@ def run_benchmark():
         start = time.perf_counter()
 
         # Execute multiple iterations
-        for _ in range(5):
+        for _ in range(repetitions):
             game.step()
 
         end = time.perf_counter()
 
         # Average time per step
-        average_time = (end - start) / 5
+        average_time = (end - start) / repetitions
 
         times.append(average_time)
 
         print(f"{size}x{size}: {average_time:.6f} seconds")
 
-    # Number of cells
+    # Number of cells in each grid
     cells = np.array([size * size for size in sizes])
+    times = np.array(times)
 
     # -----------------------------
     # Reference complexity curves
     # -----------------------------
 
     # O(n)
-    ref_linear = (
-        times[0] / cells[0]
-    ) * cells
+    ref_linear = (times[0] / cells[0]) * cells
 
     # # O(n^2)
-    ref_quad = (
-        times[0] / (cells[0] ** 2)
-    ) * (cells ** 2)
+    ref_quad = (times[0] / (cells[0] ** 2)) * (cells ** 2)
 
     # -----------------------------
     # Normal benchmark plot
@@ -108,7 +108,6 @@ def run_benchmark():
 
     # Legend and grid
     ax1.legend()
-
     ax1.grid(True)
 
 
@@ -124,6 +123,7 @@ def run_benchmark():
 
     fig2, ax2 = plt.subplots(figsize=(8, 5))
 
+    # Experimental results in log-log scale
     ax2.loglog(
         cells,
         times,
@@ -131,14 +131,31 @@ def run_benchmark():
         label="Experimental Results"
     )
 
+    # Reference curves in log-log scale
+    ax2.loglog(
+        cells,
+        ref_linear,
+        linestyle="--",
+        label="O(n)"
+    )
+
+    ax2.loglog(
+        cells,
+        ref_quad,
+        linestyle="--",
+        label="O(n^2)"
+    )
+
+    # Labels
     ax2.set_xlabel("Number of Cells (log scale)")
     ax2.set_ylabel("Average Time per Step (log scale)")
 
-    ax2.set_title("Game of Life — Log-Log Performance")
+    # Title
+    ax2.set_title("Game of Life - Log-Log Performance")
 
-    ax2.grid(True)
-
+    # Legend and grid
     ax2.legend()
+    ax2.grid(True)
 
     # Save figure
     save_plot(
