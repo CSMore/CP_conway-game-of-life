@@ -24,16 +24,22 @@ CP_conway-game-of-life/
 ├── README.md
 ├── .gitignore
 ├── images/
-│   ├── game_of_life.gif
-│   ├── game_of_life_simulation.png
-│   ├── performance_benchmark.png
-│   └── loglog_performance.png
+|   ├── blinker.gif
+|   ├── blinker_simulation.png
+|   ├── block.gif
+|   ├── block_simulation.png
+|   ├── glider.gif
+|   ├── glider_simulation.png
+|   ├── toad.gif
+|   ├── toad_simulation.png
+│   ├── loglog_performance.png
+│   └── performance_benchmark.png
 └── src/
     ├── __init__.py
-    ├── game_of_life.py
-    ├── visualization.py
     ├── benchmark.py
-    └── patterns.py
+    ├── game_of_life.py
+    ├── patterns.py
+    └── visualization.py
 ```
 
 ---
@@ -43,7 +49,7 @@ CP_conway-game-of-life/
 Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/CSMore/CP_conway-game-of-life.git
 cd CP_conway-game-of-life
 ```
 
@@ -106,6 +112,7 @@ The project includes several classic Conway patterns:
 - Glider
 - Blinker
 - Block
+- Toad
 
 Patterns are defined in:
 
@@ -119,10 +126,35 @@ src/patterns.py
 
 The simulation uses `matplotlib.animation.FuncAnimation` to display the evolution of the cellular automaton.
 
-Generated files:
+### Gliter:
 
-- `images/game_of_life.gif`
-- `images/game_of_life_simulation.png`
+
+![Glider animation](images/glider.gif)
+
+![Glider screenshot](images/glider_simulation.png)
+
+
+### Blinker
+
+![Blinker animation](images/blinker.gif)
+
+![Blinker screenshot](images/blinker_simulation.png)
+
+
+### Block
+
+![Block animation](images/block.gif)
+
+![Block screenshot](images/block_simulation.png)
+
+### Toad
+
+![Toad animation](images/toad.gif)
+
+![Toad screenshot](images/toad_simulation.png)
+
+
+
 
 ---
 
@@ -139,10 +171,13 @@ The benchmark evaluates the performance of the implementation using different gr
 
 For each grid size, the average execution time per simulation step is measured.
 
-The benchmark generates:
+The following graph shows the average execution time per simulation step compared with theoretical complexity curves:
 
-- `images/performance_benchmark.png`
-- `images/loglog_performance.png`
+![Performance benchmark](images/performance_benchmark.png)
+
+The log-log graph helps compare the empirical behavior against the reference curves:
+
+![Log-log performance benchmark](images/loglog_performance.png)
 
 ---
 
@@ -160,7 +195,7 @@ cells, every iteration must process all cells to determine their next state.
 
 The current implementation uses vectorized operations with NumPy and convolution operations from SciPy to efficiently compute neighbors for all cells simultaneously.
 
-The experimental benchmark shows behavior closer to linear growth relative to the total number of cells, especially when compared to a quadratic reference curve.
+The experimental benchmark is expected to show behavior closer to linear growth relative to the total number of cells, especially when compared to the quadratic reference curve.
 
 The log-log visualization also helps analyze scalability for larger grid sizes.
 
@@ -173,6 +208,7 @@ The simulation stores the current state of the grid as a NumPy array.
 During execution, additional arrays are temporarily created for:
 
 - Neighbor counting
+- Boolean rule evaluation
 - State transitions
 
 As a result, memory usage increases proportionally with the number of cells in the grid.
@@ -181,7 +217,7 @@ As a result, memory usage increases proportionally with the number of cells in t
 
 ## Limitations
 
-Although the implementation is significantly faster than a pure Python nested-loop approach, large grids such as 1024x1024 still require noticeable processing time.
+Although the implementation is significantly faster than a pure Python nested-loop approach, very large grids still require more processing time and memory because every generation updates the entire board.
 
 Potential future improvements include:
 
