@@ -1,8 +1,8 @@
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 
 
-def animate_game(game, steps=100, title="Conway's Game of Life"):
+def _build_animation(game, steps, interval, title):
 
     # Create figure
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -33,9 +33,9 @@ def animate_game(game, steps=100, title="Conway's Game of Life"):
         va="top"
     )
 
-    # Update animation
+    
     def update(frame):
-
+    # Update animation
         game.step()
 
         image.set_array(game.get_state())
@@ -49,14 +49,26 @@ def animate_game(game, steps=100, title="Conway's Game of Life"):
         fig,
         update,
         frames=steps,
-        interval=100,
+        interval=interval,
         blit=True,
         repeat=False
     )
 
     plt.tight_layout()
 
-    # Show animation
+    return fig, ani
+
+
+def animate_game(game, steps=100, title="Conway's Game of Life"):
+
+    # Build and show live animation
+    fig, ani = _build_animation(
+        game=game,
+        steps=steps,
+        interval=100,
+        title=title
+    )
+
     plt.show()
 
     return ani
@@ -75,57 +87,13 @@ def save_gif(
     Requires Pillow.
     """
 
-    # Create figure
-    fig, ax = plt.subplots(figsize=(6, 6))
-
-    # Remove axes
-    ax.axis("off")
-
-    # Title
-    ax.set_title(title)
-
-    # Display initial state
-    image = ax.imshow(
-        game.get_state(),
-        cmap="binary",
-        interpolation="nearest",
-        vmin=0,
-        vmax=1
-    )
-
-    # Generation counter
-    gen_text = ax.text(
-        0.02,
-        0.97,
-        "Gen: 0",
-        transform=ax.transAxes,
-        color="red",
-        fontsize=9,
-        va="top"
-    )
-
-    # Update animation
-    def update(frame):
-
-        game.step()
-
-        image.set_array(game.get_state())
-
-        gen_text.set_text(f"Gen: {frame + 1}")
-
-        return image, gen_text
-
-    # Create animation
-    ani = animation.FuncAnimation(
-        fig,
-        update,
-        frames=steps,
+    # Build animation using the same logic as live visualization
+    fig, ani = _build_animation(
+        game=game,
+        steps=steps,
         interval=1000 // fps,
-        blit=True,
-        repeat=False
+        title=title
     )
-
-    plt.tight_layout()
 
     print("Generating GIF...")
 
@@ -138,9 +106,10 @@ def save_gif(
 
     print(f"GIF saved successfully: {path}")
 
-    # Save final frame screenshot
+    # Save 
+    screenshot_path = path.replace(".gif", "_simulation.png")
     plt.savefig(
-        "images/game_of_life_simulation.png",
+        screenshot_path,
         dpi=300,
         bbox_inches="tight"
     )
