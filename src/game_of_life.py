@@ -4,15 +4,26 @@ import numpy as np
 class GameOfLife:
 
     def __init__(self, rows, cols, initial_state=None):
-
         self.rows = rows
         self.cols = cols
 
+        # Estado manual
         if initial_state is not None:
             self.grid = np.array(initial_state)
 
+            if self.grid.shape != (rows, cols):
+                raise ValueError(
+                    f"Initial state must be of shape ({rows}, {cols})"
+                )
+
+        # Estado aleatorio
         else:
-            self.grid = np.random.randint(0, 2, (rows, cols))
+
+            self.grid = np.random.randint(
+                0,
+                2,
+                (rows, cols)
+            )
 
     def count_neighbors(self, row, col):
 
